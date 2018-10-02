@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 // import MapGL from 'react-map-gl';
-import DeckGL, {LineLayer, ScatterplotLayer} from 'deck.gl';
+import DeckGL, {ArcLayer, ScatterplotLayer} from 'deck.gl';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidGlicmFoaW0iLCJhIjoiY2ptbHJ2eTFkMGJldDNxcGt4cXk5MjE0cCJ9.ax5_fH9jKStEWjH_qf_SLQ';
 const data_sites = require('./data/sites_scatter.json');
+const data_arc_hho = require('./data/arc_hho.json');
 // console.log(data_sites);
 // const data_sites = []
 
@@ -34,11 +35,22 @@ class App extends Component {
         getRadius: d => d[6],
         getColor: d => [1, 155, 194, 60],
         pickable: true,
-        fp64: true
+        fp64: false
         // onHover: d => console.log('Hovered:', d),
         // updateTriggers: {
         //   getColor: [maleColor, femaleColor]
         // }
+      }),
+      new ArcLayer({
+        id: 'arc-hho',
+        data: data_arc_hho,
+        pickable: true,
+        getStrokeWidth: 1,
+        getSourcePosition: d => [d[8], d[9]],
+        getTargetPosition: d => [d[11], d[12]],
+        getSourceColor: d => [Math.sqrt(1), 140, 0],
+        getTargetColor: d => [Math.sqrt(1), 140, 140],
+        // onHover: ({object}) => setTooltip(`${object.from.name} to ${object.to.name}`)
       })
     ];
   }
@@ -56,9 +68,8 @@ class App extends Component {
       >
         {baseMap && (
           <StaticMap
-            reuseMaps
             mapStyle="mapbox://styles/tibrahim/cjms2lcb20iiq2rkbg3inkiz9"
-            preventStyleDiffing={true}
+            // preventStyleDiffing={true}
             mapboxApiAccessToken={MAPBOX_TOKEN}
           />
         )}
